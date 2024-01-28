@@ -1,36 +1,32 @@
 {
-  "title": "auto publish crate",
+  "title": "Update Version Number and Publish Release",
   "path": "./release.yaml.hbs",
   "prompts": [
     {
       "type": "input",
       "field": "release_base_name",
-      "prompt": "input your default release_base_name"
+      "prompt": "Enter your default release base name"
     },
     {
       "type": "select",
       "field": "toolchain",
-      "prompt": "select toolchain",
+      "prompt": "Select your Rust toolchain",
+      "default": 0,
       "options": [
         {
-          "label": "stable",
+          "label": "Stable",
           "value": "stable"
         },
         {
-          "label": "beta",
+          "label": "Beta",
           "value": "beta"
         },
         {
-          "label": "nightly",
+          "label": "Nightly",
           "value": "nightly"
         }
       ]
-    },
-    {
-      "type": "confirm",
-      "field": "publish_crate",
-      "prompt": "publish crate?",
-      "default": false
     }
-  ]
+  ],
+  "finishTooltip": "Please ensure that you have set the GitHub token in your GitHub secrets with the name 'CI_GITHUB_TOKEN'."
 }

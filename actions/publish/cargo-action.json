@@ -1,25 +1,27 @@
 {
-    "title":"auto publish crate",
-    "path":"./publish-crate.yaml.hbs",
-    "prompts":[
+  "title": "Automated Crate Publishing",
+  "path": "./publish-crate.yaml.hbs",
+  "prompts": [
+    {
+      "type": "select",
+      "field": "toolchain",
+      "prompt": "Select your Rust toolchain",
+      "default": 0,
+      "options": [
         {
-            "type":"select",
-            "field":"toolchain",
-            "prompt":"select toolchain",
-            "options":[
-                {
-                    "label":"stable",
-                    "value":"stable"
-                },
-                {
-                    "label":"beta",
-                    "value":"beta"
-                },
-                {
-                    "label":"nightly",
-                    "value":"nightly"
-                }
-            ]
+          "label": "Stable",
+          "value": "stable"
+        },
+        {
+          "label": "Beta",
+          "value": "beta"
+        },
+        {
+          "label": "Nightly",
+          "value": "nightly"
         }
-    ]
+      ]
+    }
+  ],
+  "finishTooltip": "Please ensure that you have set the crates.io token \n in your GitHub secrets with the key 'CRATE_TOKEN'."
 }

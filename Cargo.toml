@@ -3,7 +3,7 @@ name = "cargo-actions"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "create a CI github action"
+description = "cargo, create a CI github action"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -21,7 +21,7 @@ serde_json = "1.0.112"
 serde_yaml = "0.9.30"
 walkdir = "2.4.0"
 toml = "0.8.8"
-auth-git2 = "0.5.3"
 tempfile = "3.9.0"
+indicatif = "0.17.7"
 
 

@@ -4,7 +4,7 @@ on:
     tags:
       - v*
 env:
-  APP_NAME: {{ package-name }}
+  APP_NAME: {{ package_name }}
   RELEASE_BASE_NAME: {{ release_base_name }}
 jobs:
   create_release:
@@ -103,17 +103,3 @@ jobs:
                 name: `${process.env.name }`,
                 data: fs.readFileSync(`./archive/${process.env.name}`)
               });
-  {{#if publish_crate }}
-  publish:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions-rs/toolchain@v1
-      with:
-      profile: minimal
-      toolchain: stable
-      override: true
-    - name: publish
-      run: cargo publish --token ${{{ secrets.CRATE_TOKEN }}}
-  {{/if}}
