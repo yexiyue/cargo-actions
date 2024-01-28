@@ -28,5 +28,5 @@
       ]
     }
   ],
-  "finishTooltip": "Please ensure that you have set the GitHub token in your GitHub secrets with the name 'CI_GITHUB_TOKEN'."
+  "finishTooltip": "Please ensure that you have set the GitHub token \n in your GitHub secrets with the name 'CI_GITHUB_TOKEN'."
 }

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
 mod prompt;
 use crate::utils::read_package_name;
+use console::style;
 use prompt::Prompt;
 use serde_json::{json, Value};
 
@@ -87,6 +88,11 @@ impl Config {
                 handlebar.render_template_with_context_to_write(&template_string, &ctx, writer)?;
             }
         }
+        println!(
+            "{}\n{}",
+            style("created successfully!").bold().green(),
+            style(&self.finish_tooltip).cyan()
+        );
 
         Ok(())
     }
