@@ -53,7 +53,7 @@ impl Config {
         let file_name = path.file_name().unwrap();
         let file_name = file_name.to_string_lossy().replace(".hbs", "");
         let file_name: String = dialoguer::Input::with_theme(&theme::ColorfulTheme::default())
-            .with_prompt("请输入工作流文件名")
+            .with_prompt("Please enter the workflow file name")
             .default(file_name)
             .interact()?;
 
