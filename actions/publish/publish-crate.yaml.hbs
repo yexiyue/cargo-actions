@@ -1,0 +1,20 @@
+name: CI
+on:
+  push:
+    tags:
+      - "v*"
+env:
+  toolchain: {{ toolchain }}
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ env.toolchain }}
+          override: true
+      - name: publish
+        run: cargo publish --token ${{ secrets.CRATE_TOKEN }}
+  

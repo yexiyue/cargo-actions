@@ -1,0 +1,35 @@
+{
+  "title": "auto publish crate",
+  "path": "./publish-crate.yaml.hbs",
+  "prompts": [
+    {
+      "type": "input",
+      "field": "release_base_name",
+      "prompt": "input your default release_base_name"
+    },
+    {
+      "type": "select",
+      "field": "toolchain",
+      "options": [
+        {
+          "label": "stable",
+          "value": "stable"
+        },
+        {
+          "label": "beta",
+          "value": "beta"
+        },
+        {
+          "label": "nightly",
+          "value": "nightly"
+        }
+      ]
+    },
+    {
+      "type": "confirm",
+      "field": "publish_crate",
+      "prompt": "publish crate?",
+      "default": false
+    }
+  ]
+}

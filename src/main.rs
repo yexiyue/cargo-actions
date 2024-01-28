@@ -1,3 +1,7 @@
+use cargo_actions::{CargoAction, Run};
+use clap::Parser;
+
 fn main() {
-    println!("Hello, world!");
+    let cargo_action = CargoAction::parse();
+    cargo_action.run().unwrap();
 }

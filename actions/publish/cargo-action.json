@@ -1,0 +1,25 @@
+{
+    "title":"auto publish crate",
+    "path":"./publish-crate.yaml.hbs",
+    "prompts":[
+        {
+            "type":"select",
+            "field":"toolchain",
+            "prompt":"select toolchain",
+            "options":[
+                {
+                    "label":"stable",
+                    "value":"stable"
+                },
+                {
+                    "label":"beta",
+                    "value":"beta"
+                },
+                {
+                    "label":"nightly",
+                    "value":"nightly"
+                }
+            ]
+        }
+    ]
+}
