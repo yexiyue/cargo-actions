@@ -8,11 +8,13 @@ use prompt::Prompt;
 use serde_json::{json, Value};
 
 /// 解析配置文件
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     title: String,
     path: String,
     prompts: Vec<Prompt>,
+    #[serde(rename = "finishTooltip")]
+    finish_tooltip: String,
 }
 
 impl ToString for Config {

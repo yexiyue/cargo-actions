@@ -5,7 +5,7 @@ use serde_json::Value;
 use super::Runner;
 
 /// prompts字段
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Prompt {
     #[serde(rename = "input")]
@@ -18,7 +18,7 @@ pub enum Prompt {
     MultiSelect(MultiSelect),
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ItemOption {
     label: String,
     value: Value,
@@ -30,7 +30,7 @@ impl ToString for ItemOption {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Input {
     prompt: String,
     field: String,
@@ -57,7 +57,7 @@ impl Runner for Input {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Select {
     prompt: String,
     field: String,
@@ -85,7 +85,7 @@ impl Runner for Select {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Confirm {
     prompt: String,
     field: String,
@@ -112,7 +112,7 @@ impl Runner for Confirm {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct MultiSelect {
     prompt: String,
     field: String,
