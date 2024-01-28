@@ -13,8 +13,8 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ env.toolchain }}
+          toolchain: ${{{ env.toolchain }}}
           override: true
       - name: publish
-        run: cargo publish --token ${{ secrets.CRATE_TOKEN }}
+        run: cargo publish --token ${{{ secrets.CRATE_TOKEN }}}
   

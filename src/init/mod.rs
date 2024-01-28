@@ -1,7 +1,6 @@
 use dialoguer::theme;
-use git2;
 use indicatif::{ProgressBar, ProgressStyle};
-use std::{ffi::OsStr, fs::File, time::Duration};
+use std::{ffi::OsStr, fs::File, process::Command, time::Duration};
 use tempfile::tempdir;
 use walkdir;
 
@@ -19,7 +18,14 @@ pub fn init(name: Option<String>) -> anyhow::Result<()> {
     let git_name = name.unwrap();
     let url = format!("https://github.com/{git_name}.git");
     let dir = tempdir()?;
-    git2::Repository::clone(&url, dir.path())?;
+    Command::new("git")
+        .args(vec![
+            "clone",
+            &url,
+            dir.path().to_path_buf().to_str().unwrap(),
+        ])
+        .output()
+        .expect("Failed to clone git repo");
     let entries = walkdir::WalkDir::new(dir.path());
     let mut cargo_actions = vec![];
     for entry in entries.into_iter().filter_map(|e| e.ok()) {
