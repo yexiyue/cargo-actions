@@ -1,19 +1,24 @@
-use std::{fs, path::PathBuf};
-
-use dialogue_macro::Asker;
 use dialoguer::theme;
 use handlebars::Context;
 use serde::{Deserialize, Serialize};
+use std::{fs, path::PathBuf};
 mod prompt;
+use crate::utils::read_package_name;
 use prompt::Prompt;
 use serde_json::{json, Value};
 
 /// 解析配置文件
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
     title: String,
     path: String,
     prompts: Vec<Prompt>,
+}
+
+impl ToString for Config {
+    fn to_string(&self) -> String {
+        self.title.to_string()
+    }
 }
 
 /// 定义runner接口，通过dialoguer获取相应的输入
@@ -35,12 +40,13 @@ impl Runner for Config {
 }
 
 impl Config {
-    pub fn write(&self, base_path: Option<PathBuf>) -> anyhow::Result<()> {
+    pub fn write(&self, base_path: &PathBuf) -> anyhow::Result<()> {
         // 模版文件路径
-        let base_path = base_path.unwrap_or_else(|| std::env::current_dir().unwrap());
         let path = base_path.join(&self.path);
         // 获取payload
-        let ctx = Context::wraps(self.run()?)?;
+        let mut ctx = Context::wraps(self.run()?)?;
+        let package_name = read_package_name()?;
+        ctx.data_mut()["package_name"] = Value::String(package_name);
 
         let file_name = path.file_name().unwrap();
         let file_name = file_name.to_string_lossy().replace(".hbs", "");

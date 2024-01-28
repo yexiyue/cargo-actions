@@ -1,6 +1,6 @@
 mod config;
 mod init;
-mod utils;
+pub mod utils;
 
 use clap::{Parser, Subcommand};
 

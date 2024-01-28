@@ -1,6 +1,6 @@
 {
   "title": "auto publish crate",
-  "path": "./publish-crate.yaml.hbs",
+  "path": "./release.yaml.hbs",
   "prompts": [
     {
       "type": "input",
