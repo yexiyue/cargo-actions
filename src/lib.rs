@@ -1,13 +1,8 @@
+mod config;
 mod init;
 mod utils;
-mod config;
-use std::{fs, path::PathBuf};
 
 use clap::{Parser, Subcommand};
-use config::Config;
-
-use crate::config::Runner;
-
 
 pub trait Run {
     fn run(&self) -> anyhow::Result<()>;
@@ -23,7 +18,10 @@ pub struct CargoAction {
 #[derive(Debug, Subcommand)]
 enum Commands {
     /// Init a github actions workflow
-    Init,
+    Init {
+        #[arg(default_value = "yexiyue/cargo-actions")]
+        name: Option<String>,
+    },
 }
 
 impl Run for CargoAction {
@@ -35,12 +33,7 @@ impl Run for CargoAction {
 impl Run for Commands {
     fn run(&self) -> anyhow::Result<()> {
         match self {
-            Self::Init => {
-                let config_file=fs::File::open("actions/test/config.json")?;
-                let config:Config=serde_json::from_reader(config_file)?;
-                config.write(Some("actions/test".parse()?))?;
-                Ok(())
-            }
+            Self::Init { name } => init::init(name.clone()),
         }
     }
 }

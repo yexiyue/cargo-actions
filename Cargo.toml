@@ -8,7 +8,6 @@ description = "create a CI github action"
 
 [dependencies]
 anyhow = "1.0.79"
-auto-git = "0.1.0"
 clap = { version = "4.4.18", features = ["derive"] }
 console = "0.15.8"
 dialogue = "0.0.0"
@@ -20,8 +19,9 @@ handlebars = "5.1.1"
 serde = { version = "1.0.195", features = ["derive"] }
 serde_json = "1.0.112"
 serde_yaml = "0.9.30"
+walkdir = "2.4.0"
 toml = "0.8.8"
+auth-git2 = "0.5.3"
+tempfile = "3.9.0"
 
 
-[workspace]
-members = ["packages/testA", "packages/testB", "testC"]

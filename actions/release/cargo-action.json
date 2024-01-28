@@ -10,6 +10,7 @@
     {
       "type": "select",
       "field": "toolchain",
+      "prompt": "select toolchain",
       "options": [
         {
           "label": "stable",
