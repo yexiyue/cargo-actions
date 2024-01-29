@@ -68,8 +68,7 @@ jobs:
           profile: minimal
           toolchain: {{toolchain}}
           override: true
-          {{{{raw}}}}
-          target: ${{ matrix.target }}
+          {{{{raw}}}}target: ${{ matrix.target }}
       - name: Build Binary
         run: cargo build --release --target ${{ matrix.target }}
       - name: Build archive
