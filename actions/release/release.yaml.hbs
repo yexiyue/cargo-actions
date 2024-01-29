@@ -6,11 +6,12 @@ on:
 env:
   APP_NAME: {{ package_name }}
   RELEASE_BASE_NAME: {{ release_base_name }}
+{{{{raw}}}}
 jobs:
   create_release:
     runs-on: ubuntu-latest
     outputs:
-      release_id: ${{{ steps.create-release.outputs.result }}}
+      release_id: ${{ steps.create-release.outputs.result }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +23,7 @@ jobs:
         id: create-release
         uses: actions/github-script@v7
         with:
-          github-token: ${{{ secrets.CI_GITHUB_TOKEN }}}
+          github-token: ${{ secrets.CI_GITHUB_TOKEN }}
           script: |
             const ref=context.ref;
             let tagName=ref.split("/").pop();
@@ -36,7 +37,7 @@ jobs:
             });
             return data.id;
   build:
-    runs-on: ${{{ matrix.os }}}
+    runs-on: ${{ matrix.os }}
     needs: create_release
     strategy:
       matrix:
@@ -55,6 +56,7 @@ jobs:
             target: x86_64-pc-windows-msvc
             ext: .7z
       fail-fast: false
+{{{{/raw}}}}
     steps:
       - uses: actions/checkout@v4
       - name: setup node
@@ -66,34 +68,35 @@ jobs:
           profile: minimal
           toolchain: {{toolchain}}
           override: true
-          target: ${{{ matrix.target }}}
+{{{{raw}}}}
+          target: ${{ matrix.target }}
       - name: Build Binary
-        run: cargo build --release --target ${{{ matrix.target }}}
+        run: cargo build --release --target ${{ matrix.target }}
       - name: Build archive
         shell: bash
         run: |
           mkdir archive
           cd archive
-          if [ "${{{ matrix.build }}}" = "windows" ]; then
-            cp "../target/${{{ matrix.target }}}/release/${{{ env.APP_NAME }}}.exe" ./
-            7z a "${{{ env.APP_NAME }}}-${{{ matrix.build }}}${{{ matrix.ext }}}" ${{{ env.APP_NAME }}}.exe
+          if [ "${{ matrix.build }}" = "windows" ]; then
+            cp "../target/${{ matrix.target }}/release/${{ env.APP_NAME }}.exe" ./
+            7z a "${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}" ${{ env.APP_NAME }}.exe
           else
-            cp "../target/${{{ matrix.target }}}/release/${{{ env.APP_NAME }}}" ./
-            tar -czf "${{{ env.APP_NAME }}}-${{{ matrix.build }}}${{{ matrix.ext }}}" ${{{ env.APP_NAME }}}
+            cp "../target/${{ matrix.target }}/release/${{ env.APP_NAME }}" ./
+            tar -czf "${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}" ${{ env.APP_NAME }}
           fi
       - name: Upload archive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{{ env.APP_NAME }}}-${{{ matrix.build }}}${{{ matrix.ext }}}
-          path: archive/${{{ env.APP_NAME }}}-${{{ matrix.build }}}${{{ matrix.ext }}}
+          name: ${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}
+          path: archive/${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}
       - name: Publish Release
         id: publish-release
         uses: actions/github-script@v7
         env:
-         release_id: ${{{ needs.create_release.outputs.release_id }}}
-         name: ${{{ env.APP_NAME }}}-${{{ matrix.build }}}${{{ matrix.ext }}}
+         release_id: ${{ needs.create_release.outputs.release_id }}
+         name: ${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}
         with:
-          github-token: ${{{ secrets.CI_GITHUB_TOKEN }}}
+          github-token: ${{ secrets.CI_GITHUB_TOKEN }}
           script: |
               const fs=require('fs');
               await github.rest.repos.uploadReleaseAsset({
@@ -103,3 +106,4 @@ jobs:
                 name: `${process.env.name }`,
                 data: fs.readFileSync(`./archive/${process.env.name}`)
               });
+{{{{/raw}}}}
