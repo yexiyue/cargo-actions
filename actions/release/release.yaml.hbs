@@ -68,7 +68,7 @@ jobs:
           profile: minimal
           toolchain: {{toolchain}}
           override: true
-{{{{raw}}}}
+          {{{{raw}}}}
           target: ${{ matrix.target }}
       - name: Build Binary
         run: cargo build --release --target ${{ matrix.target }}
@@ -106,4 +106,4 @@ jobs:
                 name: `${process.env.name }`,
                 data: fs.readFileSync(`./archive/${process.env.name}`)
               });
-{{{{/raw}}}}
+            {{{{/raw}}}}
