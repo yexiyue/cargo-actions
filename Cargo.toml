@@ -20,6 +20,13 @@ walkdir = "2.4.0"
 toml = "0.8.8"
 tempfile = "3.9.0"
 indicatif = "0.17.7"
+git2 = "0.18.1"
+git2_credentials = "0.13.0"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+tracing-indicatif = "0.3.6"
+
+
 
 [[bin]]
 path = "src/main.rs"

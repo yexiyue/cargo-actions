@@ -1,8 +1,11 @@
 mod config;
+mod favorites;
 mod init;
 pub mod utils;
-
 use clap::Parser;
+pub mod git;
+pub mod logs;
+pub mod spinner;
 
 pub trait Run {
     fn run(&self) -> anyhow::Result<()>;
@@ -11,7 +14,7 @@ pub trait Run {
 #[derive(Debug, Parser)]
 #[command(author, version, about, name = "cargo actions", bin_name = "cargo")]
 pub enum CargoAction {
-    #[command(subcommand, name = "actions")]
+    #[command(subcommand, name = "actions", alias = "act")]
     Actions(Commands),
 }
 
