@@ -1,4 +1,3 @@
-use crate::{error, info};
 use anyhow::Result;
 use dialoguer::{Input, Password};
 use git2::Progress;
@@ -101,13 +100,10 @@ impl From<&str> for GitUrl {
                 return GitUrl::Unknown(value.to_string());
             }
             if value.ends_with(".git") {
-                return GitUrl::Unknown(format!(
-                    "https://mirror.ghproxy.com/https://github.com/{value}"
-                ));
+                // https://mirror.ghproxy.com/https://github.com/
+                return GitUrl::Unknown(format!("git@github.com:{value}"));
             }
-            GitUrl::Unknown(format!(
-                "https://mirror.ghproxy.com/https://github.com/{value}.git"
-            ))
+            GitUrl::Unknown(format!("git@github.com:{value}.git"))
         }
     }
 }
@@ -115,54 +111,9 @@ impl From<&str> for GitUrl {
 impl GitUrl {
     pub fn clone(&self, path: &Path) -> anyhow::Result<()> {
         match self {
-            GitUrl::Http(url) => clone_repo(&url, path, None)
-                .or_else(|e| {
-                    error!("git clone failed: {}", e);
-                    info!("try again with https proxy");
-                    let new_url = url.replace(
-                        "https://github.com/",
-                        "https://mirror.ghproxy.com/https://github.com/",
-                    );
-                    clone_repo(&new_url, path, None)
-                })
-                .or_else(|e| {
-                    error!("git clone failed: {}", e);
-                    info!("try again with ssh");
-                    let new_url = url.replace("https://github.com/", "git@github.com:");
-                    clone_repo(&new_url, path, None)
-                }),
-            GitUrl::Ssh(url) => clone_repo(&url, path, None)
-                .or_else(|e| {
-                    error!("git clone failed: {}", e);
-                    info!("try again with http");
-                    let new_url = url.replace("git@github.com:", "https://github.com/");
-                    clone_repo(&new_url, path, None)
-                })
-                .or_else(|e| {
-                    error!("git clone failed: {}", e);
-                    info!("try again with https proxy");
-                    let new_url = url.replace(
-                        "git@github.com:",
-                        "https://mirror.ghproxy.com/https://github.com/",
-                    );
-                    clone_repo(&new_url, path, None)
-                }),
-            GitUrl::Unknown(url) => clone_repo(&url, path, None)
-                .or_else(|e| {
-                    error!("git clone failed: {}", e);
-                    info!("try again with ssh");
-                    let new_url = url.replace(
-                        "https://mirror.ghproxy.com/https://github.com/",
-                        "git@github.com:",
-                    );
-                    clone_repo(&new_url, path, None)
-                })
-                .or_else(|e| {
-                    error!("git clone failed: {}", e);
-                    info!("try again with http");
-                    let new_url = url.replace("https://mirror.ghproxy.com/", "");
-                    clone_repo(&new_url, path, None)
-                }),
+            GitUrl::Http(url) => clone_repo(&url, path, None),
+            GitUrl::Ssh(url) => clone_repo(&url, path, None),
+            GitUrl::Unknown(url) => clone_repo(&url, path, None),
         }
     }
 }

@@ -1,5 +1,6 @@
 use anyhow::Result;
-use std::fs;
+use dialoguer::theme::ColorfulTheme;
+use std::fs::{self};
 use toml::Table;
 
 pub fn read_package_name() -> Result<String> {
@@ -31,4 +32,14 @@ pub fn read_members() -> Result<Vec<String>> {
     } else {
         Ok(vec![package_name])
     }
+}
+
+pub fn multiselect<'a, 'b, T: ToString>(options: &'a [T], prompt: &'b str) -> Result<Vec<&'a T>> {
+    let defaults = vec![true; options.len()];
+    let selected = dialoguer::MultiSelect::with_theme(&ColorfulTheme::default())
+        .items(options)
+        .with_prompt(prompt)
+        .defaults(&defaults)
+        .interact()?;
+    Ok(selected.iter().map(|i| &options[*i]).collect::<Vec<_>>())
 }

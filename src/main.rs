@@ -14,7 +14,7 @@ fn main() {
         )
         .with(indicatif_layer)
         .init();
-    let cargo_action = CargoAction::parse();
+    let mut cargo_action = CargoAction::parse();
 
     match cargo_action.run() {
         Ok(_) => {}
