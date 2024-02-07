@@ -16,6 +16,10 @@ pub struct InitArgs {
     /// The github name or url of the action
     #[arg(default_value = "yexiyue/cargo-actions")]
     url: Option<String>,
+
+    /// The subpath of the action
+    #[arg(short, long)]
+    subpath: Option<String>,
 }
 
 impl Run for InitArgs {
@@ -31,9 +35,12 @@ impl Run for InitArgs {
                 return Err(anyhow!("Please check if the Git user / repository exists. \n Failed to download actions from github: {}", e));
             }
         }
-
+        let d_path = match &self.subpath {
+            Some(subpath) => dir.path().join(subpath),
+            None => dir.path().to_path_buf(),
+        };
         // 获取所有cargo-action.json文件
-        let entries = walkdir::WalkDir::new(dir.path());
+        let entries = walkdir::WalkDir::new(d_path);
         let mut cargo_actions = vec![];
         for entry in entries.into_iter().filter_map(|e| e.ok()) {
             if entry.file_name() == OsStr::new("cargo-action.json") {
@@ -49,7 +56,7 @@ impl Run for InitArgs {
         }
         if path_configs.len() == 1 {
             let PathConfig(action_path, config) = &path_configs[0];
-            info!("⚙️ Action title: {}", config.title);
+            info!("⚙️ Action title: {}", config.description);
             config.write(&action_path.parent().unwrap().to_path_buf())?;
             Ok(())
         } else {

@@ -1,5 +1,5 @@
 {
-  "title": "Automated Crate Publishing",
+  "description": "Automated Crate Publishing",
   "path": "./publish-crate.yaml.hbs",
   "prompts": [
     {

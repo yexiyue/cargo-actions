@@ -3,42 +3,50 @@ mod favorites;
 mod init;
 pub mod utils;
 use clap::Parser;
+use favorites::FavoriteArgs;
+use init::InitArgs;
 pub mod git;
 pub mod logs;
+mod path_configs;
 pub mod spinner;
 
 pub trait Run {
-    fn run(&self) -> anyhow::Result<()>;
+    fn run(&mut self) -> anyhow::Result<()>;
+}
+pub trait Asker {
+    fn ask(&mut self) -> anyhow::Result<()>;
 }
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, name = "cargo actions", bin_name = "cargo")]
 pub enum CargoAction {
     #[command(subcommand, name = "actions", alias = "act")]
-    Actions(Commands),
+    Actions(ActionsArgs),
 }
 
 #[derive(Debug, Parser)]
-pub enum Commands {
+pub enum ActionsArgs {
     /// Init a github actions workflow
-    Init {
-        #[arg(default_value = "yexiyue/cargo-actions")]
-        name: Option<String>,
-    },
+    Init(InitArgs),
+
+    /// Add a favorite command
+    #[command(alias = "fav")]
+    Favorite(FavoriteArgs),
 }
 
 impl Run for CargoAction {
-    fn run(&self) -> anyhow::Result<()> {
-        match &self {
+    fn run(&mut self) -> anyhow::Result<()> {
+        match self {
             Self::Actions(action) => action.run(),
         }
     }
 }
 
-impl Run for Commands {
-    fn run(&self) -> anyhow::Result<()> {
+impl Run for ActionsArgs {
+    fn run(&mut self) -> anyhow::Result<()> {
         match self {
-            Self::Init { name } => init::init(name.clone()),
+            Self::Init(init) => init.run(),
+            Self::Favorite(args) => args.run(),
         }
     }
 }

@@ -10,16 +10,17 @@ use serde_json::{json, Value};
 /// 解析配置文件
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
-    pub title: String,
     pub path: String,
     pub prompts: Vec<Prompt>,
     #[serde(rename = "finishTooltip")]
     pub finish_tooltip: String,
+    pub author: Option<String>,
+    pub description: String,
 }
 
 impl ToString for Config {
     fn to_string(&self) -> String {
-        self.title.to_string()
+        self.description.to_string()
     }
 }
 

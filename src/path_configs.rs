@@ -7,7 +7,7 @@ pub struct PathConfig<'a>(pub Cow<'a, PathBuf>, pub Cow<'a, Config>);
 
 impl<'a> ToString for PathConfig<'a> {
     fn to_string(&self) -> String {
-        self.1.title.clone()
+        self.1.description.clone()
     }
 }
 
