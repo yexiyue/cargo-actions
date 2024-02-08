@@ -8,7 +8,6 @@ use init::InitArgs;
 pub mod git;
 pub mod logs;
 mod path_configs;
-pub mod spinner;
 
 pub trait Run {
     fn run(&mut self) -> anyhow::Result<()>;

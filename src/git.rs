@@ -1,7 +1,10 @@
 use anyhow::Result;
 use dialoguer::{Input, Password};
 use git2::Progress;
-use std::{error::Error, path::Path};
+use std::{
+    error::Error,
+    path::{Path, PathBuf},
+};
 
 struct CredentialUI;
 
@@ -88,9 +91,9 @@ impl ToString for GitUrl {
     }
 }
 
-impl From<&str> for GitUrl {
-    fn from(value: &str) -> Self {
-        let value = value.trim();
+impl<T: AsRef<str>> From<T> for GitUrl {
+    fn from(value: T) -> Self {
+        let value = value.as_ref().trim();
         if value.starts_with("https://github.com/") {
             GitUrl::Http(value.to_string())
         } else if value.starts_with("git@github.com:") {

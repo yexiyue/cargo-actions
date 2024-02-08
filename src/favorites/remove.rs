@@ -14,7 +14,7 @@ pub struct RemoveArgs {
 impl Asker for RemoveArgs {
     fn ask(&mut self) -> anyhow::Result<()> {
         let favorites = FavoriteConfig::read_favorite_config()?;
-        // todo 重构，提供更详细的信息进行删除
+        favorites.render_table();
         if self.name.is_none() {
             let options = &favorites.get_ids();
             let index = dialoguer::Select::with_theme(&ColorfulTheme::default())

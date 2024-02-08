@@ -1,7 +1,7 @@
 use clap::Args;
 use dialoguer::theme::ColorfulTheme;
 
-use crate::{error, info, success, Asker, Run};
+use crate::{error, favorites::config::FavoriteGit, info, success, Asker, Run};
 
 use super::config::{Favorite, FavoriteConfig, FavoriteLocal};
 
@@ -9,6 +9,9 @@ use super::config::{Favorite, FavoriteConfig, FavoriteLocal};
 pub struct AddArgs {
     /// git url of the favorite
     url: Option<String>,
+    /// subpath of the favorite
+    #[arg(short, long)]
+    subpath: Option<String>,
     /// Use local path
     #[arg(long, action=clap::ArgAction::SetTrue)]
     local: bool,
@@ -20,7 +23,7 @@ pub struct AddArgs {
 impl Asker for AddArgs {
     fn ask(&mut self) -> anyhow::Result<()> {
         let home = std::env::var("HOME")?;
-        if self.local == false {
+        if self.subpath.is_none() && self.local == false {
             self.local = dialoguer::Confirm::with_theme(&ColorfulTheme::default())
                 .default(false)
                 .with_prompt("Use local path?")
@@ -34,6 +37,14 @@ impl Asker for AddArgs {
             self.url = Some(
                 dialoguer::Input::with_theme(&ColorfulTheme::default())
                     .with_prompt(prompt)
+                    .interact()?,
+            );
+        }
+        if self.local == false && self.subpath.is_none() {
+            self.subpath = Some(
+                dialoguer::Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Enter the subpath")
+                    .allow_empty(true)
                     .interact()?,
             );
         }
@@ -75,7 +86,19 @@ impl AddArgs {
             info!("\nplease run `cargo actions favorite --list` to see the result");
             Ok(())
         } else {
-            // todo 复制到本地并替换path
+            let git = FavoriteGit::new(self.url.as_ref().unwrap(), self.subpath.clone());
+            let fav = git.select(self.copy)?;
+            for i in fav {
+                match favorites.add_favorite(Favorite::Git(i)) {
+                    Ok(name) => {
+                        success!("add favorite success, id: {}", name);
+                    }
+                    Err(e) => {
+                        error!("{}", e);
+                    }
+                }
+            }
+            info!("\nplease run `cargo actions favorite --list` to see the result");
             Ok(())
         }
     }

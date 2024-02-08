@@ -1,12 +1,14 @@
+use crate::warn;
+
+pub use self::{git::FavoriteGit, local::FavoriteLocal};
 use anyhow::Result;
+use prettytable::row;
 use serde::{Deserialize, Serialize};
 use std::{
     fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
 };
-
-pub use self::{git::FavoriteGit, local::FavoriteLocal};
 mod git;
 mod local;
 
@@ -127,6 +129,57 @@ impl FavoriteConfig {
 
     pub fn get_ids(&self) -> Vec<&str> {
         self.iter().map(|favorite| favorite.get_id()).collect()
+    }
+
+    pub fn render_table(&self) {
+        if self.len() == 0 {
+            warn!("There is no favorite, please add one");
+        } else {
+            let mut table = prettytable::Table::new();
+
+            table.set_titles(row![FYc=>"ID", "Author","Origin", "Description"]);
+            for item in self.iter() {
+                match item {
+                    Favorite::Git(git) => {
+                        let mut origin = git.meta.origin.clone();
+                        if origin.len() > 40 {
+                            origin.insert_str(40, "\n");
+                        };
+
+                        let mut description = git.meta.description.clone();
+                        if description.len() > 40 {
+                            description.insert_str(40, "\n");
+                        };
+
+                        table.add_row(row![
+                            Fcc->&git.meta.id,
+                            Fmc->&git.meta.author.as_ref().unwrap_or(&"--".to_string()),
+                            Fgl->&format!("git: {}", origin),
+                            &description
+                        ]);
+                    }
+                    Favorite::Local(local) => {
+                        let mut origin = local.meta.origin.clone();
+                        if origin.len() > 40 {
+                            origin.insert_str(40, "\n");
+                        };
+
+                        let mut description = local.meta.description.clone();
+                        if description.len() > 40 {
+                            description.insert_str(40, "\n");
+                        };
+
+                        table.add_row(row![
+                            Fcc->&local.meta.id,
+                            Fmc->&local.meta.author.as_ref().unwrap_or(&"--".to_string()),
+                            Fbl->&format!("local: {}", origin),
+                            &description
+                        ]);
+                    }
+                }
+            }
+            table.printstd();
+        }
     }
 }
 

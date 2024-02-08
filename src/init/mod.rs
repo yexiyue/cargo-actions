@@ -23,6 +23,7 @@ pub struct InitArgs {
 }
 
 impl Run for InitArgs {
+    // todo 添加本地favorite 支持
     fn run(&mut self) -> anyhow::Result<()> {
         info!("🚀 Downloading actions from github...");
 
