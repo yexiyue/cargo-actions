@@ -5,7 +5,7 @@ mod remove;
 use add::AddArgs;
 
 use remove::RemoveArgs;
-mod config;
+pub mod config;
 
 #[derive(Debug, Subcommand)]
 pub enum FavoriteCommand {

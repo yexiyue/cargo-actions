@@ -1,0 +1,106 @@
+name: CI
+on:
+  push:
+    tags:
+      - v*
+env:
+  APP_NAME: cargo-actions
+  RELEASE_BASE_NAME: yexiyue
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Create Release
+        id: create-release
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.CI_GITHUB_TOKEN }}
+          script: |
+            const ref=context.ref;
+            let tagName=ref.split("/").pop();
+            const { data } = await github.rest.repos.createRelease({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               name: `${process.env.RELEASE_BASE_NAME} ${tagName}`,
+               tag_name: tagName,
+               draft: false,
+               prerelease: false,
+            });
+            return data.id;
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: create_release
+    strategy:
+      matrix:
+        build: [linux, windows, macos]
+        include:
+          - build: linux
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            ext: .tar.gz
+          - build: macos
+            os: macos-latest
+            target: x86_64-apple-darwin
+            ext: .tar.gz
+          - build: windows
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            ext: .7z
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          target: ${{ matrix.target }}
+      - name: Build Binary
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Build archive
+        shell: bash
+        run: |
+          mkdir archive
+          cd archive
+          if [ "${{ matrix.build }}" = "windows" ]; then
+            cp "../target/${{ matrix.target }}/release/${{ env.APP_NAME }}.exe" ./
+            7z a "${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}" ${{ env.APP_NAME }}.exe
+          else
+            cp "../target/${{ matrix.target }}/release/${{ env.APP_NAME }}" ./
+            tar -czf "${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}" ${{ env.APP_NAME }}
+          fi
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}
+          path: archive/${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}
+      - name: Publish Release
+        id: publish-release
+        uses: actions/github-script@v7
+        env:
+         release_id: ${{ needs.create_release.outputs.release_id }}
+         name: ${{ env.APP_NAME }}-${{ matrix.build }}${{ matrix.ext }}
+        with:
+          github-token: ${{ secrets.CI_GITHUB_TOKEN }}
+          script: |
+              const fs=require('fs');
+              await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: process.env.release_id,
+                name: `${process.env.name }`,
+                data: fs.readFileSync(`./archive/${process.env.name}`)
+              });
+            

@@ -27,6 +27,12 @@ impl Favorite {
             Self::Local(local) => &local.meta.id,
         }
     }
+    pub fn write(&self) -> anyhow::Result<()> {
+        match self {
+            Self::Git(git) => git.write(),
+            Self::Local(local) => local.write(),
+        }
+    }
 }
 
 /// favorite meta

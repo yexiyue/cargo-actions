@@ -5,8 +5,10 @@ use clap::builder::OsStr;
 use fs_extra::file::CopyOptions;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
+use tempfile::tempdir;
 
 use crate::{
+    config::Config,
     git::GitUrl,
     info,
     path_configs::{PathConfig, PathConfigs},
@@ -76,15 +78,17 @@ impl FavoriteGit {
         let mut favorite = self.clone();
 
         let mut origin_path = self.url.clone();
-        if self.subpath.is_some() {
-            let temp_dir = TEMP.path().as_os_str().to_string_lossy().to_string();
-            let path = path
-                .as_os_str()
-                .to_string_lossy()
-                .to_string()
-                .replace(&temp_dir, "");
-            origin_path = format!("{}/{}", self.url, path);
-        }
+
+        let temp_dir = TEMP.path().as_os_str().to_string_lossy().to_string();
+        let relative_path = path
+            .as_os_str()
+            .to_string_lossy()
+            .to_string()
+            .replace(&temp_dir, "")
+            .replacen("/", "", 1);
+        origin_path = format!("{}/{}", self.url, relative_path);
+        favorite.subpath = Some(relative_path);
+
         // 根据源路径生成md5 哈希值作为id
         let digest = md5::compute(&origin_path);
         let md5 = format!("{:?}", digest);
@@ -114,7 +118,7 @@ impl FavoriteGit {
         }
 
         favorite.meta.author = config.author.clone();
-        let git_url=GitUrl::from(&self.url);
+        let git_url = GitUrl::from(&self.url);
         favorite.meta.set_origin(&git_url.to_string());
         favorite.meta.set_describe(&config.description);
         Ok(favorite)
@@ -136,5 +140,24 @@ impl FavoriteGit {
             }
         }
         Ok(res)
+    }
+
+    pub fn write(&self) -> anyhow::Result<()> {
+        if self.path.is_some() {
+            info!("🚀 Copy action from local");
+            let path = PathBuf::from(self.path.as_ref().unwrap());
+            let config = Config::from(&path)?;
+            config.write(&path.parent().as_ref().unwrap().to_path_buf())?;
+        } else {
+            info!("🚀 Downloading action from github...");
+            let temp = tempdir()?;
+            let git_url = GitUrl::from(&self.url);
+            git_url.clone(&temp.path())?;
+
+            let path = temp.path().join(&self.subpath.as_ref().unwrap());   
+            let config = Config::from(&path)?;
+            config.write(&path.parent().as_ref().unwrap().to_path_buf())?;
+        }
+        Ok(())
     }
 }

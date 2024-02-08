@@ -1,10 +1,7 @@
 use anyhow::Result;
 use dialoguer::{Input, Password};
 use git2::Progress;
-use std::{
-    error::Error,
-    path::{Path, PathBuf},
-};
+use std::{error::Error, path::Path};
 
 struct CredentialUI;
 

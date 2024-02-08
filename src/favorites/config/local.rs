@@ -8,7 +8,11 @@ use fs_extra::file::CopyOptions;
 use serde::{Deserialize, Serialize};
 
 use super::FavoriteMeta;
-use crate::path_configs::{PathConfig, PathConfigs};
+use crate::{
+    config::Config,
+    info,
+    path_configs::{PathConfig, PathConfigs},
+};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct FavoriteLocal {
@@ -93,7 +97,7 @@ impl FavoriteLocal {
         } else {
             favorite.path = path_str.clone();
         }
-        
+
         favorite.meta.author = config.author.clone();
         favorite.meta.set_origin(&path_str);
         favorite.meta.set_describe(&config.description);
@@ -116,5 +120,13 @@ impl FavoriteLocal {
             }
         }
         Ok(res)
+    }
+
+    pub fn write(&self) -> anyhow::Result<()> {
+        info!("🚀 Copy action from local");
+        let path = PathBuf::from(&self.path);
+        let config = Config::from(&path)?;
+        config.write(&path.parent().as_ref().unwrap().to_path_buf())?;
+        Ok(())
     }
 }

@@ -93,4 +93,9 @@ impl Config {
         info!("{}", &self.finish_tooltip);
         Ok(())
     }
+
+    pub fn from(value: &PathBuf) -> anyhow::Result<Self> {
+        let file = fs::File::open(value)?;
+        Ok(serde_json::from_reader(file)?)
+    }
 }
