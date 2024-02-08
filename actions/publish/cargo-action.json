@@ -1,6 +1,7 @@
 {
   "description": "Automated Crate Publishing",
   "path": "./publish-crate.yaml.hbs",
+  "author":"yexiyue <yexiyue666@qq.com>",
   "prompts": [
     {
       "type": "select",

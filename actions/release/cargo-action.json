@@ -1,7 +1,7 @@
 {
   "description": "Update Version Number and Publish Release",
   "path": "./release.yaml.hbs",
-  "author": "Yexiyue",
+  "author": "yexiyue <yexiyue666@qq.com>",
   "prompts": [
     {
       "type": "input",
