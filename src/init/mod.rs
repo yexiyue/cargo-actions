@@ -1,15 +1,14 @@
 use anyhow::anyhow;
 use clap::Args;
-use dialoguer::theme::ColorfulTheme;
-use std::ffi::OsStr;
+use std::{env::current_dir, ffi::OsStr};
 use tempfile::tempdir;
 use walkdir;
 
 use crate::{
-    favorites::config::FavoriteConfig,
+    // favorites::config::FavoriteConfig,
     git::GitUrl,
     info,
-    path_configs::{PathConfig, PathConfigs},
+    path_configs::{PathConfigs, SelectPathConfig, WritePath},
     Run,
 };
 
@@ -22,7 +21,7 @@ pub struct InitArgs {
     /// The subpath of the action
     #[arg(short, long)]
     subpath: Option<String>,
-    
+
     /// use favorites
     #[arg(short, long, action=clap::ArgAction::SetTrue)]
     favorite: bool,
@@ -52,9 +51,16 @@ impl Run for InitArgs {
             let mut cargo_actions = vec![];
             for entry in entries.into_iter().filter_map(|e| e.ok()) {
                 if entry.file_name() == OsStr::new("cargo-action.json") {
-                    cargo_actions.push(entry.path().to_path_buf());
+                    cargo_actions.push(
+                        entry
+                            .path()
+                            .parent()
+                            .ok_or(anyhow!("cargo-action.json parent not found"))?
+                            .to_path_buf(),
+                    );
                 }
             }
+
             let path_configs = PathConfigs::from(&cargo_actions)?;
 
             if path_configs.len() == 0 {
@@ -63,25 +69,31 @@ impl Run for InitArgs {
                 info!("🎉 Actions downloaded successfully");
             }
             if path_configs.len() == 1 {
-                let PathConfig(action_path, config) = &path_configs[0];
-                info!("⚙️ Action title: {}", config.description);
-                config.write(&action_path.parent().unwrap().to_path_buf())?;
+                let config = &path_configs[0];
+                info!("⚙️ Action title: {}", config.config.name);
+                if config.config.description.is_some() {
+                    info!(
+                        "⚙️ Action description: {}",
+                        config.config.description.as_ref().unwrap()
+                    );
+                }
+                let default_write_path = current_dir()?
+                    .join(".github/workflows")
+                    .join(format!("{}.yaml", config.config.name))
+                    .to_string_lossy()
+                    .to_string();
+                let write_path = WritePath::asker().write_path(default_write_path).finish();
+                config.write_template(write_path.as_ref())?;
                 Ok(())
             } else {
-                let PathConfig(action_path, config) = path_configs.select("Select an action")?;
-                config.write(&action_path.parent().unwrap().to_path_buf())?;
+                let select_config = SelectPathConfig::asker()
+                    .action_config(&path_configs, 0)
+                    .finish();
+                select_config.write_template()?;
                 Ok(())
             }
         } else {
-            let favorites = FavoriteConfig::read_favorite_config()?;
-            favorites.render_table();
-            let options = &favorites.get_ids();
-            let index = dialoguer::Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Select the favorite you want to remove")
-                .items(options)
-                .interact()?;
-            let favorite = favorites.get(index).unwrap();
-            favorite.write()?;
+            
             Ok(())
         }
     }

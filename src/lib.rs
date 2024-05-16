@@ -1,9 +1,6 @@
-mod config;
-mod favorites;
 mod init;
 pub mod utils;
 use clap::Parser;
-use favorites::FavoriteArgs;
 use init::InitArgs;
 pub mod git;
 pub mod logs;
@@ -27,10 +24,6 @@ pub enum CargoAction {
 pub enum ActionsArgs {
     /// Init a github actions workflow
     Init(InitArgs),
-
-    /// Add a favorite command
-    #[command(alias = "fav")]
-    Favorite(FavoriteArgs),
 }
 
 impl Run for CargoAction {
@@ -45,7 +38,6 @@ impl Run for ActionsArgs {
     fn run(&mut self) -> anyhow::Result<()> {
         match self {
             Self::Init(init) => init.run(),
-            Self::Favorite(args) => args.run(),
         }
     }
 }

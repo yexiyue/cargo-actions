@@ -1,7 +1,8 @@
 {
+  "name": "publish",
   "description": "Automated Crate Publishing",
   "path": "./publish-crate.yaml.hbs",
-  "author":"yexiyue <yexiyue666@qq.com>",
+  "author": "yexiyue <yexiyue666@qq.com>",
   "prompts": [
     {
       "type": "select",
@@ -24,5 +25,5 @@
       ]
     }
   ],
-  "finishTooltip": "Please ensure that you have set the crates.io token \n in your GitHub secrets with the key 'CRATE_TOKEN'."
+  "success_message": "Please ensure that you have set the crates.io token \n in your GitHub secrets with the key 'CRATE_TOKEN'."
 }

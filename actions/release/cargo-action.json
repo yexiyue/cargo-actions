@@ -1,7 +1,7 @@
 {
+  "name": "release",
   "description": "Update Version Number and Publish Release",
   "path": "./release.yaml.hbs",
-  "author": "yexiyue <yexiyue666@qq.com>",
   "prompts": [
     {
       "type": "input",
@@ -29,5 +29,5 @@
       ]
     }
   ],
-  "finishTooltip": "Please ensure that you have set the GitHub token \n in your GitHub secrets with the name 'CI_GITHUB_TOKEN'."
+  "success_message": "Please ensure that you have set the GitHub token \n in your GitHub secrets with the name 'CI_GITHUB_TOKEN'."
 }

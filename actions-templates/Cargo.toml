@@ -1,0 +1,17 @@
+[package]
+name = "actions-templates"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.80"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.114"
+handlebars = { version = "5.1.0", features = ["no_logging"] }
+dialoguer = { version = "0.11.0", optional = true }
+
+[features]
+default = ["dialoguer"]
+dialoguer = ["dep:dialoguer"]

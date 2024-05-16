@@ -1,56 +1,79 @@
-use crate::{config::Config, utils::multiselect};
-use anyhow::Context;
-use dialoguer::theme;
-use std::{borrow::Cow, fs::File, ops::Deref, path::PathBuf};
+use actions_templates::ActionConfig;
+use anyhow::anyhow;
+use dialogue_macro::Asker;
+use std::{env::current_dir, ops::Deref, path::PathBuf};
 
-pub struct PathConfig<'a>(pub Cow<'a, PathBuf>, pub Cow<'a, Config>);
+#[derive(Debug, Clone)]
+pub struct PathConfig(ActionConfig);
 
-impl<'a> ToString for PathConfig<'a> {
-    fn to_string(&self) -> String {
-        self.1.description.clone()
+impl Deref for PathConfig {
+    type Target = ActionConfig;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 
-pub struct PathConfigs<'a> {
-    inner: Vec<PathConfig<'a>>,
+impl ToString for PathConfig {
+    fn to_string(&self) -> String {
+        self.0.config.name.clone()
+    }
 }
 
-impl<'a> Deref for PathConfigs<'a> {
-    type Target = Vec<PathConfig<'a>>;
+pub struct PathConfigs {
+    inner: Vec<PathConfig>,
+}
+
+impl Deref for PathConfigs {
+    type Target = Vec<PathConfig>;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl<'a> PathConfigs<'a> {
-    pub fn from(paths: &'a [PathBuf]) -> anyhow::Result<Self> {
+impl PathConfigs {
+    pub fn from(paths: &[PathBuf]) -> anyhow::Result<Self> {
         let mut configs = vec![];
         for path in paths {
-            let file = File::open(path).with_context(|| format!("Failed to open {:?}", path))?;
-            let config: Config = serde_json::from_reader(file)?;
+            let config = ActionConfig::from_dir(path)?;
             configs.push(config);
         }
-        let path_configs = paths
-            .iter()
-            .zip(configs)
-            .map(|(p, a)| PathConfig(Cow::Borrowed(p), Cow::Owned(a)))
+        let path_configs = configs
+            .into_iter()
+            .map(|a| PathConfig(a))
             .collect::<Vec<_>>();
         Ok(Self {
             inner: path_configs,
         })
     }
+}
 
-    pub fn select(&self, prompt: &str) -> anyhow::Result<&PathConfig> {
-        let index = dialoguer::Select::with_theme(&theme::ColorfulTheme::default())
-            .with_prompt(prompt)
-            .items(&self)
-            .default(0)
-            .interact()?;
+#[derive(Debug, Clone, Asker)]
+pub struct SelectPathConfig {
+    #[select(with_default = true, prompt = "请选择actions template")]
+    pub action_config: PathConfig,
+}
 
-        Ok(&self[index])
+#[derive(Debug, Clone, Asker)]
+pub struct WritePath {
+    #[input(with_default = true, prompt = "请输入写入路径：")]
+    pub write_path: String,
+}
+
+impl AsRef<str> for WritePath {
+    fn as_ref(&self) -> &str {
+        self.write_path.as_ref()
     }
+}
 
-    pub fn multiselect(&self, prompt: &str) -> anyhow::Result<Vec<&PathConfig>> {
-        multiselect(&self, prompt)
+impl SelectPathConfig {
+    pub fn write_template(&self) -> anyhow::Result<()> {
+        let default_write_path = current_dir()?
+            .join(".github/workflows")
+            .join(format!("{}.yaml", self.action_config.config.name))
+            .to_string_lossy()
+            .to_string();
+        let write_path = WritePath::asker().write_path(default_write_path).finish();
+        self.action_config.write_template(write_path.as_ref());
+        Ok(())
     }
 }
