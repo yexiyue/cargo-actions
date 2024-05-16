@@ -1,8 +1,8 @@
 mod temp_server;
+use crate::info;
+use crate::CARGO_ACTIONS_URL;
 use anyhow::{anyhow, Result};
 use serde_json::Value;
-
-use crate::info;
 
 use self::temp_server::service;
 
@@ -15,7 +15,11 @@ pub fn login() -> Result<()> {
 
 async fn get_url() -> Result<()> {
     let client = reqwest::Client::new();
-    let res = client.get("http://127.0.0.1:8000/api/login").send().await?;
+
+    let res = client
+        .get(format!("{CARGO_ACTIONS_URL}/api/login"))
+        .send()
+        .await?;
     let data = res.json::<Value>().await?;
     open::that(data["url"].as_str().ok_or(anyhow!("url not found"))?)?;
     info!(

@@ -13,7 +13,6 @@ pub mod template;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ActionConfig {
-    #[serde(flatten)]
     pub config: Config,
     /// 完整的描述，包括一些配置信息
     #[serde(skip_serializing_if = "Option::is_none")]
