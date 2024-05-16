@@ -1,9 +1,7 @@
+use crate::info;
 use actions_templates::ActionConfig;
-use anyhow::anyhow;
 use dialogue_macro::Asker;
 use std::{env::current_dir, ops::Deref, path::PathBuf};
-
-use crate::info;
 
 #[derive(Debug, Clone)]
 pub struct PathConfig(ActionConfig);

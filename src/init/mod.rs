@@ -93,7 +93,6 @@ impl Run for InitArgs {
                 Ok(())
             }
         } else {
-            
             Ok(())
         }
     }
