@@ -3,6 +3,8 @@ use anyhow::anyhow;
 use dialogue_macro::Asker;
 use std::{env::current_dir, ops::Deref, path::PathBuf};
 
+use crate::info;
+
 #[derive(Debug, Clone)]
 pub struct PathConfig(ActionConfig);
 
@@ -72,8 +74,12 @@ impl SelectPathConfig {
             .join(format!("{}.yaml", self.action_config.config.name))
             .to_string_lossy()
             .to_string();
+        info!(
+            "⚙️ Action description: {}",
+            self.action_config.config.description.as_ref().unwrap()
+        );
         let write_path = WritePath::asker().write_path(default_write_path).finish();
-        self.action_config.write_template(write_path.as_ref());
+        self.action_config.write_template(write_path.as_ref())?;
         Ok(())
     }
 }

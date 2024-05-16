@@ -19,7 +19,6 @@ pub struct Config {
 
 impl Config {
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Self> {
-        println!("loading config from {}", path.as_ref().display());
         let file = std::fs::File::open(path)?;
         Ok(serde_json::from_reader(file)?)
     }

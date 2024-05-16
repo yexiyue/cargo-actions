@@ -24,11 +24,9 @@ pub struct ActionConfig {
 impl ActionConfig {
     // 标准Cargo actions模版目录
     pub fn from_dir<P: AsRef<Path>>(path: P) -> Result<Self> {
-        println!("from_file: {:?}", path.as_ref());
         // 读取配置文件
         let config_path = path.as_ref().join("cargo-action.json");
         let config = Config::from_file(config_path)?;
-        println!("from_file: {:?}", config);
         // 读取 README.md 文件
         let readme_path = path.as_ref().join("README.md");
         let readme = if readme_path.exists() {
