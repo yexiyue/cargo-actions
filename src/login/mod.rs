@@ -10,7 +10,7 @@ pub fn login() -> Result<()> {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()?;
-    Ok(runtime.block_on(service())?)
+    runtime.block_on(service())
 }
 
 async fn get_url() -> Result<()> {

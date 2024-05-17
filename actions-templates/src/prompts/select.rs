@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::CommonFields;
 #[cfg(feature = "dialoguer")]
 use super::DialoguerValue;
@@ -22,9 +24,9 @@ pub struct ItemOption {
 }
 
 #[cfg(feature = "dialoguer")]
-impl ToString for ItemOption {
-    fn to_string(&self) -> String {
-        self.label.clone()
+impl Display for ItemOption {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.label)
     }
 }
 

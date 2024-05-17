@@ -4,12 +4,13 @@ use anyhow::anyhow;
 use dialogue_macro::Asker;
 use std::{
     env::current_dir,
+    fmt::Display,
     ops::Deref,
     path::{Path, PathBuf},
 };
 
 #[derive(Debug, Clone)]
-pub struct PathConfig(ActionConfig);
+pub struct PathConfig(pub ActionConfig);
 
 impl Deref for PathConfig {
     type Target = ActionConfig;
@@ -18,14 +19,14 @@ impl Deref for PathConfig {
     }
 }
 
-impl ToString for PathConfig {
-    fn to_string(&self) -> String {
-        self.0.config.name.clone()
+impl Display for PathConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.config.name)
     }
 }
 
 pub struct PathConfigs {
-    inner: Vec<PathConfig>,
+    pub inner: Vec<PathConfig>,
 }
 
 impl Deref for PathConfigs {
@@ -42,10 +43,7 @@ impl PathConfigs {
             let config = ActionConfig::from_dir(path)?;
             configs.push(config);
         }
-        let path_configs = configs
-            .into_iter()
-            .map(|a| PathConfig(a))
-            .collect::<Vec<_>>();
+        let path_configs = configs.into_iter().map(PathConfig).collect::<Vec<_>>();
         Ok(Self {
             inner: path_configs,
         })

@@ -1,9 +1,16 @@
 use std::env::current_dir;
 
-use actions_templates::{config::Config, ActionConfig};
+use actions_templates::{config::Config, template::Template, ActionConfig};
+use cynic::{http::ReqwestExt, QueryBuilder};
 use serde_json::Value;
 
-use crate::{error, info, path_configs::WritePath, success, CARGO_ACTIONS_URL};
+use crate::{
+    error,
+    graphql::{QueryTemplate, QueryTemplateVariables},
+    info,
+    path_configs::WritePath,
+    success, CARGO_ACTIONS_URL,
+};
 
 pub fn use_template_id(id: &str) -> anyhow::Result<()> {
     tokio::runtime::Builder::new_current_thread()
@@ -11,22 +18,29 @@ pub fn use_template_id(id: &str) -> anyhow::Result<()> {
         .build()?
         .block_on(async move {
             let client = reqwest::Client::new();
+            let query = QueryTemplate::build(QueryTemplateVariables {
+                id: id.parse::<i32>()?,
+            });
 
             let res = client
-                .get(format!("{CARGO_ACTIONS_URL}/api/template/{id}"))
-                .send()
+                .post(format!("{CARGO_ACTIONS_URL}/api/graphql"))
+                .run_graphql(query)
                 .await?;
 
-            if res.status().is_success() {
+            if let Some(QueryTemplate { template_by_id }) = res.data {
                 info!("upload template success");
-                let mut data = res.json::<Value>().await?;
-                if data.is_null() {
-                    error!("template {id} not found");
-                } else {
-                    let config_string = &data["config"];
-                    let new_config: Config = serde_json::from_str(config_string.as_str().unwrap())?;
-                    data["config"] = serde_json::to_value(new_config)?;
-                    let actions_template = serde_json::from_value::<ActionConfig>(data)?;
+
+                if let Some(data) = template_by_id {
+                    let config_string = &data.config;
+
+                    let new_config: Value = serde_json::from_str(config_string.as_str())?;
+                    let new_config: Config = serde_json::from_str(new_config.as_str().unwrap())?;
+
+                    let actions_template = ActionConfig {
+                        config: new_config,
+                        template: Template(data.template),
+                        readme: None,
+                    };
                     let default_write_path = current_dir()?
                         .join(".github/workflows")
                         .join(format!("{}.yaml", actions_template.config.name))
@@ -40,10 +54,15 @@ pub fn use_template_id(id: &str) -> anyhow::Result<()> {
                     if actions_template.config.success_message.is_some() {
                         info!("{}", actions_template.config.success_message.unwrap());
                     }
+                } else {
+                    error!("template {id} not found");
                 }
-            } else {
-                let error = res.text().await?;
-                error!("get template error: {error}");
+            }
+
+            if let Some(errors) = res.errors {
+                for error in errors {
+                    error!("{}", error.message);
+                }
             }
 
             Ok::<(), anyhow::Error>(())

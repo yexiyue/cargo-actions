@@ -33,6 +33,12 @@ axum = "0.7.5"
 open = "5.1.2"
 tower-http = { version = "0.5.2", features = ["cors"] }
 tokio-util = "0.7.11"
+cynic = { version = "3.7.1", features = [
+    "reqwest",
+    "http-reqwest",
+    "serde_json",
+] }
+cynic-codegen = "3.7.1"
 
 
 [[bin]]
@@ -44,3 +50,6 @@ lto = true
 opt-level = 3
 
 workspace = { members = ["actions-templates"] }
+
+[build-dependencies]
+cynic-codegen = "3.7.1"

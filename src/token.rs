@@ -24,9 +24,9 @@ impl Token {
         if file_path.exists() {
             let file = File::open(file_path)?;
             let token: Token = serde_json::from_reader(file)?;
-            return Ok(token);
+            Ok(token)
         } else {
-            return Err(anyhow::anyhow!("please login first"));
+            Err(anyhow::anyhow!("please login first"))
         }
     }
 }

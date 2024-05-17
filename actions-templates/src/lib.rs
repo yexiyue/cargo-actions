@@ -36,7 +36,7 @@ impl ActionConfig {
 
         // 读取模版文件
         let template_path = path.as_ref().join(
-            &config
+            config
                 .path
                 .as_ref()
                 .unwrap_or(&format!("{}.yaml.hbs", &config.name)),

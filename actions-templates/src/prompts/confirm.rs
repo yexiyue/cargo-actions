@@ -24,7 +24,7 @@ impl DialoguerValue for Confirm {
         } else {
             Ok(dialoguer::Confirm::with_theme(&ColorfulTheme::default())
                 .with_prompt(self.common.prompt.as_str())
-                .default(self.default.clone().unwrap())
+                .default(self.default.unwrap())
                 .interact()?)
         }
     }

@@ -46,9 +46,9 @@ impl DialoguerValue for Prompt {
     type Value = Value;
     fn dialoguer_value(&self) -> Result<Self::Value> {
         match self {
-            Prompt::Input(input) => input.dialoguer_value().map(|v| Value::String(v)),
+            Prompt::Input(input) => input.dialoguer_value().map(Value::String),
             Prompt::Select(select) => select.dialoguer_value(),
-            Prompt::Confirm(confirm) => confirm.dialoguer_value().map(|v| Value::Bool(v)),
+            Prompt::Confirm(confirm) => confirm.dialoguer_value().map(Value::Bool),
             Prompt::MultiSelect(multiselect) => multiselect.dialoguer_value(),
         }
     }

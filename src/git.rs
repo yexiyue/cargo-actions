@@ -1,7 +1,7 @@
 use anyhow::Result;
 use dialoguer::{Input, Password};
 use git2::Progress;
-use std::{error::Error, path::Path};
+use std::{error::Error, fmt::Display, path::Path};
 
 struct CredentialUI;
 
@@ -26,12 +26,9 @@ impl git2_credentials::CredentialUI for CredentialUI {
         Ok(passphrase)
     }
 }
+type ProgressCallback<'a> = Option<Box<dyn for<'b> FnMut(Progress<'b>) + 'a>>;
 
-pub fn clone_repo(
-    url: &str,
-    path: &Path,
-    progress_cb: Option<Box<dyn for<'a> FnMut(Progress<'a>)>>,
-) -> Result<()> {
+pub fn clone_repo(url: &str, path: &Path, progress_cb: ProgressCallback) -> Result<()> {
     // 创建一个 RemoteCallbacks 对象
     let mut cb = git2::RemoteCallbacks::new();
     // 打开默认的 git 配置
@@ -44,7 +41,7 @@ pub fn clone_repo(
         let mut progress_cb = progress_cb.unwrap();
         cb.transfer_progress(move |progress| {
             progress_cb(progress);
-            return true;
+            true
         });
     }
 
@@ -67,7 +64,7 @@ pub fn clone_repo(
         // 设置 fetch options
         .fetch_options(fo)
         // 克隆仓库
-        .clone(url, &path)?;
+        .clone(url, path)?;
 
     Ok(())
 }
@@ -77,13 +74,12 @@ pub enum GitUrl {
     Ssh(String),
     Unknown(String),
 }
-
-impl ToString for GitUrl {
-    fn to_string(&self) -> String {
+impl Display for GitUrl {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            GitUrl::Http(url) => url.to_string(),
-            GitUrl::Ssh(url) => url.to_string(),
-            GitUrl::Unknown(url) => url.to_string(),
+            GitUrl::Http(url) => f.write_str(url),
+            GitUrl::Ssh(url) => f.write_str(url),
+            GitUrl::Unknown(url) => f.write_str(url),
         }
     }
 }
@@ -111,9 +107,9 @@ impl<T: AsRef<str>> From<T> for GitUrl {
 impl GitUrl {
     pub fn clone(&self, path: &Path) -> anyhow::Result<()> {
         match self {
-            GitUrl::Http(url) => clone_repo(&url, path, None),
-            GitUrl::Ssh(url) => clone_repo(&url, path, None),
-            GitUrl::Unknown(url) => clone_repo(&url, path, None),
+            GitUrl::Http(url) => clone_repo(url, path, None),
+            GitUrl::Ssh(url) => clone_repo(url, path, None),
+            GitUrl::Unknown(url) => clone_repo(url, path, None),
         }
     }
 }

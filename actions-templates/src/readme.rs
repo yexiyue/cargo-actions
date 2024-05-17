@@ -5,6 +5,12 @@ use std::{ops::Deref, path::Path};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ReadME(String);
 
+impl From<String> for ReadME {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 impl ReadME {
     pub fn from_file<P>(path: P) -> Result<Self>
     where

@@ -3,13 +3,17 @@ pub mod utils;
 use clap::Parser;
 use init::InitArgs;
 use login::login;
+use mine::MineArgs;
 use upload::UploadArgs;
 pub mod git;
+mod graphql;
 mod login;
 pub mod logs;
+mod mine;
 mod path_configs;
 mod token;
 mod upload;
+mod client;
 
 static CARGO_ACTIONS_URL: &str = "http://localhost:8000";
 static CARGO_ACTIONS_FRONT_URL: &str = "http://localhost:5173";
@@ -35,6 +39,9 @@ pub enum ActionsArgs {
 
     /// Upload a template to cargo actions
     Upload(UploadArgs),
+
+    /// Init a github actions workflow from user's template
+    Mine(MineArgs),
 }
 
 impl Run for CargoAction {
@@ -51,6 +58,7 @@ impl Run for ActionsArgs {
             Self::Init(init) => init.run(),
             Self::Login => login(),
             Self::Upload(upload) => upload.run(),
+            Self::Mine(mine) => mine.run(),
         }
     }
 }

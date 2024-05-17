@@ -1,5 +1,6 @@
 use crate::prompts::Prompts;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::path::Path;
 
 use anyhow::Result;
@@ -15,6 +16,13 @@ pub struct Config {
     pub prompts: Prompts,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub success_message: Option<String>,
+}
+
+impl From<String> for Config {
+    fn from(value: String) -> Self {
+        let new_config: Value = serde_json::from_str(value.as_str()).unwrap();
+        serde_json::from_str(new_config.as_str().unwrap()).unwrap()
+    }
 }
 
 impl Config {

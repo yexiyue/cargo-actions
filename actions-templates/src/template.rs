@@ -3,7 +3,13 @@ use serde::{Deserialize, Serialize};
 use std::{ops::Deref, path::Path};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Template(String);
+pub struct Template(pub String);
+
+impl From<String> for Template {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
 
 impl Template {
     pub fn from_file<P>(path: P) -> Result<Self>
@@ -17,7 +23,7 @@ impl Template {
 
     pub fn render_to_string<D: Serialize>(&self, data: &D) -> Result<String> {
         let handlebars = handlebars::Handlebars::new();
-        Ok(handlebars.render_template(&self, data)?)
+        Ok(handlebars.render_template(self, data)?)
     }
 }
 

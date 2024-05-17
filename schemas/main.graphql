@@ -1,0 +1,104 @@
+type Category {
+  id: Int!
+  name: String!
+  description: String!
+}
+
+input CategoryInput {
+  name: String!
+  description: String!
+}
+
+"""
+Implement the DateTime<FixedOffset> scalar
+
+The input/output is a string in RFC3339 format.
+"""
+scalar DateTime
+
+"""
+A scalar that can represent any JSON value.
+"""
+scalar JSON
+
+type Mutation {
+  createCategory(category: CategoryInput!): Int!
+  updateCategory(id: Int!, category: CategoryInput!): Category!
+  deleteCategory(id: Int!): String!
+  createTag(tag: TagInput!): Tag!
+  updateTag(id: Int!, tag: TagInput!): Tag!
+  deleteTag(id: Int!): String!
+  createTemplate(input: TemplateCreateInput!): Int!
+  updateTemplate(id: Int!, input: TemplateUpdateInput!): Template!
+}
+
+type Query {
+  user: User!
+  userById(id: Int!): User
+  categories: [Category!]!
+  templates: [Template!]!
+  """
+  通过ID获取模版详情
+  """
+  templateById(id: Int!): Template
+  """
+  需要权限
+  """
+  templatesByUser: [Template!]!
+  """
+  获取用户模版列表，不需要权限，但只能看到未公开的
+  """
+  templatesByUserId(userId: Int!): [Template!]!
+}
+
+type Tag {
+  id: Int!
+  name: String!
+  description: String!
+}
+
+input TagInput {
+  name: String!
+  description: String!
+}
+
+type Template {
+  id: Int!
+  name: String!
+  config: String!
+  template: String!
+  userId: Int!
+  categoryId: Int!
+  readme: String
+  sourceCodeUrl: String
+  isPublic: Boolean!
+  createAt: DateTime
+  updateAt: DateTime
+}
+
+input TemplateCreateInput {
+  name: String!
+  config: JSON!
+  template: String!
+  userId: Int!
+  categoryId: Int
+  readme: String
+  sourceCodeUrl: String
+}
+
+input TemplateUpdateInput {
+  name: String!
+  config: JSON!
+  template: String!
+  categoryId: Int!
+  readme: String
+  sourceCodeUrl: String
+}
+
+type User {
+  id: Int!
+  username: String!
+  avatarUrl: String!
+  createAt: DateTime
+}
+
