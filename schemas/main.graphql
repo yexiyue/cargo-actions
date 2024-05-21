@@ -9,12 +9,38 @@ input CategoryInput {
   description: String!
 }
 
+type Comment {
+  id: Int!
+  userId: Int!
+  templateId: Int!
+  parentCommentId: Int
+  content: String!
+  createAt: DateTime
+}
+
+input CommentInput {
+  content: String!
+  templateId: Int!
+  parentCommentId: Int
+}
+
+type CommentWithUser {
+  comment: Comment!
+  user: User!
+}
+
 """
 Implement the DateTime<FixedOffset> scalar
 
 The input/output is a string in RFC3339 format.
 """
 scalar DateTime
+
+type Favorites {
+  userId: Int!
+  templateId: Int!
+  createAt: DateTime
+}
 
 """
 A scalar that can represent any JSON value.
@@ -30,17 +56,41 @@ type Mutation {
   deleteTag(id: Int!): String!
   createTemplate(input: TemplateCreateInput!): Int!
   updateTemplate(id: Int!, input: TemplateUpdateInput!): Template!
+  deleteTemplate(id: Int!): String!
+  increaseDownloadCount(id: Int!): String!
+  """
+  添加标签
+  """
+  updateTags(input: TemplateTagInput!): String!
+  favorite(templateId: Int!): String!
+  disFavorite(templateId: Int!): String!
+  """
+  添加评论
+  """
+  addComment(input: CommentInput!): Int!
+  """
+  删除评论
+  """
+  deleteComment(id: Int!): String!
+}
+
+input Pagination {
+  pageSize: Int!
+  page: Int!
 }
 
 type Query {
   user: User!
   userById(id: Int!): User
   categories: [Category!]!
-  templates: [Template!]!
+  tags: [Tag!]!
+  templatesWithPagination(categoryId: Int, pagination: Pagination): TemplatesWithPagination!
+  favoriteTemplates: [Template]!
   """
   通过ID获取模版详情
   """
-  templateById(id: Int!): Template
+  templateById(id: Int!): Template!
+  templateWithUser(id: Int!): TemplateWithUser!
   """
   需要权限
   """
@@ -49,6 +99,19 @@ type Query {
   获取用户模版列表，不需要权限，但只能看到未公开的
   """
   templatesByUserId(userId: Int!): [Template!]!
+  """
+  获取模版下载次数
+  """
+  templateDownloadCount(id: Int!): Int!
+  """
+  获取模版收藏次数
+  """
+  templateFavoriteCount(id: Int!): Int!
+  comments(id: Int!): [CommentWithUser!]!
+  """
+  获取模版评论次数
+  """
+  templateCommentCount(id: Int!): Int!
 }
 
 type Tag {
@@ -81,9 +144,15 @@ input TemplateCreateInput {
   config: JSON!
   template: String!
   userId: Int!
-  categoryId: Int
+  categoryId: Int!
   readme: String
   sourceCodeUrl: String
+  isPublic: Boolean!
+}
+
+input TemplateTagInput {
+  tagId: [Int!]!
+  templateId: Int!
 }
 
 input TemplateUpdateInput {
@@ -93,6 +162,30 @@ input TemplateUpdateInput {
   categoryId: Int!
   readme: String
   sourceCodeUrl: String
+}
+
+type TemplateWithUser {
+  id: Int!
+  username: String!
+  avatarUrl: String!
+  createAt: DateTime
+  name: String!
+  config: String!
+  template: String!
+  userId: Int!
+  categoryId: Int!
+  readme: String
+  sourceCodeUrl: String
+  isPublic: Boolean!
+  updateAt: DateTime
+  favorites: [Favorites!]!
+  category: Category!
+  tags: [Tag!]!
+}
+
+type TemplatesWithPagination {
+  templates: [Template!]!
+  total: Int!
 }
 
 type User {

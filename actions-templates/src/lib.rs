@@ -17,6 +17,7 @@ pub struct ActionConfig {
     /// 完整的描述，包括一些配置信息
     #[serde(skip_serializing_if = "Option::is_none")]
     pub readme: Option<ReadME>,
+    pub id: Option<i32>,
     pub template: Template,
 }
 
@@ -47,6 +48,7 @@ impl ActionConfig {
             config,
             readme,
             template,
+            id: None,
         })
     }
 

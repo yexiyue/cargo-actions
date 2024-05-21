@@ -1,11 +1,11 @@
-use anyhow::anyhow;
+use anyhow::{anyhow, bail};
 use clap::Args;
-use cynic::{http::ReqwestExt, QueryBuilder};
+use cynic::{http::ReqwestExt, MutationBuilder, QueryBuilder};
 
 use crate::{
     client::author_client,
     error,
-    graphql::UserTemplates,
+    graphql::{IncreaseTemplate, IncreaseTemplateVariables, UserTemplates},
     path_configs::{PathConfigs, SelectPathConfig},
     Run, CARGO_ACTIONS_URL,
 };
@@ -26,6 +26,14 @@ impl Run for MineArgs {
                 let select_config = SelectPathConfig::asker()
                     .action_config(&templates, 0)
                     .finish();
+                if let Some(id) = select_config.action_config.id {
+                    let (client, _) = author_client()?;
+                    let mutation = IncreaseTemplate::build(IncreaseTemplateVariables { id });
+                    client
+                        .post(format!("{CARGO_ACTIONS_URL}/api/graphql"))
+                        .run_graphql(mutation)
+                        .await?;
+                }
                 select_config.write_template()?;
                 Ok::<(), anyhow::Error>(())
             })
@@ -42,12 +50,13 @@ async fn get_user_templates() -> anyhow::Result<PathConfigs> {
     if let Some(errors) = res.errors {
         for error in errors {
             if error.message == "Unauthorized" {
-                error!("{} 请重新登陆", error.message);
+                bail!("{} 请重新登陆", error.message);
             } else {
                 error!("{}", error.message);
             }
         }
     }
+
     if let Some(data) = res.data {
         Ok(data.templates_by_user.into())
     } else {
