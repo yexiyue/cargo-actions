@@ -139,3 +139,15 @@ pub struct TemplateTagInput {
     pub tag_id: Vec<i32>,
     pub template_id: i32,
 }
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "Query")]
+pub struct GetUserId {
+    pub user: User,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "User")]
+pub struct User {
+    pub id: i32,
+}

@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 pub struct Token {
     pub token: String,
     pub access_token: String,
+    pub refresh_token: String,
     pub user: User,
 }
 
@@ -13,7 +14,7 @@ pub struct Token {
 pub struct User {
     pub avatar_url: String,
     pub create_at: Option<String>,
-    pub id: u64,
+    pub id: i32,
     pub username: String,
 }
 
@@ -28,5 +29,13 @@ impl Token {
         } else {
             Err(anyhow::anyhow!("please login first"))
         }
+    }
+
+    pub fn save(&self) -> anyhow::Result<()> {
+        let dir = env!("HOME");
+        let file_path = Path::new(dir).join(".cargo-actions/token.json");
+        let file = File::create(file_path)?;
+        serde_json::to_writer(file, self)?;
+        Ok(())
     }
 }

@@ -1,5 +1,5 @@
 use crate::{
-    client::author_client,
+    client::{author_client, get_user_id},
     error,
     graphql::{
         AddTemplateTags, AddTemplateTagsVariables, Category, CategoryAndTags, Json, Tag,
@@ -52,7 +52,8 @@ impl Run for UploadArgs {
             .enable_all()
             .build()?
             .block_on(async move {
-                let (client, token) = author_client()?;
+                let user_id = get_user_id().await?;
+                let (client, _) = author_client()?;
                 let category_tags_query = CategoryAndTags::build(());
 
                 let category_tags_res = client
@@ -72,7 +73,7 @@ impl Run for UploadArgs {
                             config: Json(serde_json::to_string(&action_config.config)?),
                             readme: action_config.readme.as_ref().map(|readme| readme.as_str()),
                             template: action_config.template.as_str(),
-                            user_id: token.user.id as i32,
+                            user_id,
                             category_id: inputs.category_id.id,
                             source_code_url: None,
                             is_public: inputs.is_public,

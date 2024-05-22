@@ -1,10 +1,10 @@
 mod init;
-pub mod utils;
 use clap::Parser;
 use init::InitArgs;
 use login::login;
 use mine::MineArgs;
 use upload::UploadArgs;
+mod client;
 pub mod git;
 mod graphql;
 mod login;
@@ -13,7 +13,6 @@ mod mine;
 mod path_configs;
 mod token;
 mod upload;
-mod client;
 
 static CARGO_ACTIONS_URL: &str = "http://localhost:8000";
 static CARGO_ACTIONS_FRONT_URL: &str = "http://localhost:5173";
