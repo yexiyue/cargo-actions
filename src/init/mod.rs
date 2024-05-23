@@ -14,18 +14,20 @@ use crate::{
     Run,
 };
 
+/// Arguments for initializing a GitHub Actions workflow.
 #[derive(Debug, Args)]
 pub struct InitArgs {
-    ///[URL]: The github name or url of the action
-    ///[ID]: The id of the action
+    /// Specify the GitHub repository name or URL of the action.
+    /// Alternately, you may provide an action ID.
     #[arg(default_value = "yexiyue/cargo-actions", name = "URL|ID")]
     url: Option<String>,
 
-    /// The subpath of the action
+    /// Specify the subdirectory path within the action repository.
     #[arg(short, long)]
     subpath: Option<String>,
 
-    /// use the template id of the action
+    /// Use the provided action ID instead of a repository URL.
+    /// When set, `url` is expected to contain an ID.
     #[arg(short, long, action=clap::ArgAction::SetTrue)]
     id: bool,
 }

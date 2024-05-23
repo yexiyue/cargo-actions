@@ -24,6 +24,8 @@ pub struct Template {
     pub id: i32,
     pub config: String,
     pub template: String,
+    pub is_public: bool,
+    pub category_id: i32,
 }
 
 #[derive(cynic::QueryVariables, Debug)]
@@ -56,8 +58,14 @@ pub struct UploadTemplate {
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "Query")]
+pub struct UserCreatedTemplates {
+    pub templates_by_user: UserTemplates,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "UserTemplates")]
 pub struct UserTemplates {
-    pub templates_by_user: Vec<Template>,
+    pub templates: Vec<Template>,
 }
 
 impl From<Template> for PathConfig {
@@ -94,11 +102,21 @@ pub struct IncreaseTemplate {
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "Query")]
 pub struct CategoryAndTags {
-    pub categories: Vec<Category>,
+    pub categories: CategoryWithPagination,
+    pub tags: TagWithPagination,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+pub struct TagWithPagination {
     pub tags: Vec<Tag>,
 }
 
-#[derive(cynic::QueryFragment, Debug, Clone)]
+#[derive(cynic::QueryFragment, Debug)]
+pub struct CategoryWithPagination {
+    pub categories: Vec<Category>,
+}
+
+#[derive(cynic::QueryFragment, Debug, Clone, PartialEq)]
 pub struct Tag {
     pub id: i32,
     pub name: String,
@@ -150,4 +168,48 @@ pub struct GetUserId {
 #[cynic(graphql_type = "User")]
 pub struct User {
     pub id: i32,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "Query")]
+pub struct FavoriteTemplates {
+    pub favorite_templates: UserTemplates,
+}
+
+#[derive(cynic::QueryVariables, Debug)]
+pub struct TemplateTagsVariables {
+    pub id: i32,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "Query", variables = "TemplateTagsVariables")]
+pub struct TemplateTags {
+    #[arguments(id: $id)]
+    pub template_tags: Vec<Tag>,
+    #[arguments(id: $id)]
+    pub template_by_id: Template,
+}
+
+#[derive(cynic::QueryVariables, Debug)]
+pub struct UpdateTemplateVariables<'a> {
+    pub id: i32,
+    pub input: TemplateUpdateInput<'a>,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "Mutation", variables = "UpdateTemplateVariables")]
+pub struct UpdateTemplate {
+    #[arguments(id: $id, input: $input)]
+    pub update_template: Template,
+}
+
+#[derive(cynic::InputObject, Debug)]
+pub struct TemplateUpdateInput<'a> {
+    pub name: Option<&'a str>,
+    pub config: Option<Json>,
+    pub template: Option<&'a str>,
+    pub category_id: Option<i32>,
+    pub readme: Option<&'a str>,
+    pub source_code_url: Option<&'a str>,
+    pub is_public: Option<bool>,
 }

@@ -5,7 +5,7 @@ use cynic::{http::ReqwestExt, MutationBuilder, QueryBuilder};
 use crate::{
     client::author_client,
     error,
-    graphql::{IncreaseTemplate, IncreaseTemplateVariables, UserCreatedTemplates, UserTemplates},
+    graphql::{FavoriteTemplates, IncreaseTemplate, IncreaseTemplateVariables, UserTemplates},
     path_configs::{PathConfigs, SelectPathConfig},
     CARGO_ACTIONS_URL,
 };
@@ -19,7 +19,6 @@ pub fn run() -> anyhow::Result<()> {
             let select_config = SelectPathConfig::asker()
                 .action_config(&templates, 0)
                 .finish();
-
             if let Some(id) = select_config.action_config.id {
                 let (client, _) = author_client()?;
                 let mutation = IncreaseTemplate::build(IncreaseTemplateVariables { id });
@@ -34,7 +33,7 @@ pub fn run() -> anyhow::Result<()> {
 }
 
 async fn get_user_templates() -> anyhow::Result<PathConfigs> {
-    let query = UserCreatedTemplates::build(());
+    let query = FavoriteTemplates::build(());
     let (client, _) = author_client()?;
     let res = client
         .post(format!("{CARGO_ACTIONS_URL}/api/graphql"))
@@ -50,12 +49,12 @@ async fn get_user_templates() -> anyhow::Result<PathConfigs> {
         }
     }
 
-    if let Some(UserCreatedTemplates {
-        templates_by_user: UserTemplates { templates },
+    if let Some(FavoriteTemplates {
+        favorite_templates: UserTemplates { templates },
     }) = res.data
     {
         if templates.is_empty() {
-            bail!("您没有创建任何模版")
+            bail!("您没有收藏任何模版")
         }
         Ok(templates.into())
     } else {
