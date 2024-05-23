@@ -14,5 +14,6 @@ jobs:
           toolchain: stable
           override: true
       - name: publish
-        run: cargo publish --token ${{ secrets.CRATE_TOKEN }}
-  
+        run: |
+          cargo publish -p actions-templates --token ${{ secrets.CRATE_TOKEN }}
+          cargo publish --token ${{ secrets.CRATE_TOKEN }}

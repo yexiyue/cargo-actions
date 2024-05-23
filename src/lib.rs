@@ -15,7 +15,7 @@ mod token;
 mod upload;
 
 static CARGO_ACTIONS_URL: &str = "https://actions-workflow.shuttleapp.rs";
-static CARGO_ACTIONS_FRONT_URL: &str = "https://yexiyue.github.io/actions-workflows/";
+static CARGO_ACTIONS_FRONT_URL: &str = "https://yexiyue.github.io/actions-workflows";
 
 pub trait Run {
     fn run(&mut self) -> anyhow::Result<()>;
