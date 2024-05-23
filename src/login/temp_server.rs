@@ -37,7 +37,7 @@ async fn shuttle_signal(s: CancellationToken) {
 
     tokio::select! {
         _ = s.cancelled() => {
-            success!("\n登陆成功");
+            success!("登陆成功");
         },
         _ = terminate => {
 
