@@ -22,9 +22,9 @@ pub trait Run {
 }
 
 #[derive(Debug, Parser)]
-#[command(author, version, about, name = "cargo actions", bin_name = "cargo")]
+#[command(name = "cargo actions", bin_name = "cargo")]
 pub enum CargoAction {
-    #[command(subcommand, name = "actions", alias = "act")]
+    #[command(subcommand, author, version, about, name = "actions", alias = "act")]
     Actions(ActionsArgs),
 }
 
