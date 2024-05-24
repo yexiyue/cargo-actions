@@ -10,11 +10,11 @@ jobs:
     permissions:
       contents: write
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: {{{{raw}}}}${{ github.workflow }}-${{ github.ref }}{{{{/raw}}}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      {{#if (toolchain=="pnpm")}}
+      {{#if (eq toolchain "pnpm")}}
       - name: Install pnpm
         run: npm install -g pnpm
       {{/if}}
@@ -22,9 +22,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "{{ node_version }}"
-          {{#if enable_cache}}
-          cache: "{{toolchain}}"
+        {{#if enable_cache}}
+          {{#if (eq toolchain "pnpm")}}
+          cache: "{{folder}}/pnpm-lock.yaml"
           {{/if}}
+          {{#if (eq toolchain "npm")}}
+          cache: "{{folder}}/package-lock.json"
+          {{/if}}
+          {{#if (eq toolchain "yarn")}}
+          cache: "{{folder}}/yarn.lock"
+          {{/if}}
+        {{/if}}
       - name: Install dependencies
         run: |
           cd {{folder}}
@@ -39,7 +47,5 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
-        {{{{raw}}}}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-        {{{{/raw}}}}
+          {{{{raw}}}}github_token: ${{ secrets.GITHUB_TOKEN }}{{{{/raw}}}}
           publish_dir: {{folder}}/{{target_dir}}

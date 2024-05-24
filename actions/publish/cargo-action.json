@@ -1,5 +1,5 @@
 {
-  "name": "publish crate",
+  "name": "publish-crate",
   "description": "发布Rust Crate",
   "path": "./publish-crate.yaml.hbs",
   "prompts": [

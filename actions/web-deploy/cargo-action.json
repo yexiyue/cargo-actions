@@ -24,7 +24,7 @@
     },
     {
       "type": "confirm",
-      "field": "enable_catch",
+      "field": "enable_cache",
       "prompt": "是否启用缓存",
       "default": true
     },

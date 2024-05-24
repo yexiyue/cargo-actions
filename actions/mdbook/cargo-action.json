@@ -1,0 +1,18 @@
+{
+  "name": "mdBook",
+  "description": "构建web 应用到Github Pages",
+  "prompts": [
+    {
+      "type": "input",
+      "field": "mdbook_version",
+      "prompt": "请输入mdbook版本号",
+      "default": "latest"
+    },
+    {
+      "type": "input",
+      "field": "folder",
+      "prompt": "mdbook 项目路径",
+      "default": "."
+    }
+  ]
+}

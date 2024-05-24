@@ -14,6 +14,4 @@ jobs:
           toolchain: {{ toolchain }}
           override: true
       - name: publish
-        {{{{raw}}}}
-        run: cargo publish --token ${{ secrets.CRATE_TOKEN }}
-        {{{{/raw}}}}
+        {{{{raw}}}}run: cargo publish --token ${{ secrets.CRATE_TOKEN }}{{{{/raw}}}}
