@@ -11,9 +11,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: {{ toolchain }}
+          toolchain: stable
           override: true
       - name: publish
-        {{{{raw}}}}
-        run: cargo publish --token ${{ secrets.CRATE_TOKEN }}
-        {{{{/raw}}}}
+run: cargo publish --token ${{ secrets.CRATE_TOKEN }}
