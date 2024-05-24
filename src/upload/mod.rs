@@ -45,7 +45,6 @@ pub struct UploadArgs {
 
 impl Run for UploadArgs {
     fn run(&mut self) -> anyhow::Result<()> {
-        println!("self:{self:?}");
         if !self.update.unwrap() {
             let args = UploadArgs::asker().update().finish();
             self.update = args.update;
