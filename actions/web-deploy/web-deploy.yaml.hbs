@@ -1,0 +1,45 @@
+name: web
+on:
+  push:
+    branches:
+      - "master"
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      {{#if toolchain=="pnpm"}}
+      - name: Install pnpm
+        run: npm install -g pnpm
+      {{/if}}
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: "{{ node_version }}"
+          {{#if enable_cache}}
+          cache: "{{toolchain}}"
+          {{/if}}
+      - name: Install dependencies
+        run: |
+          cd {{folder}}
+          {{toolchain}} install
+      - name: Build
+        run: |
+          cd {{folder}}
+          {{toolchain}} build
+          {{#if copy_index}}
+          cp {{target_dir}}/index.html {{target_dir}}/404.html
+          {{/if}}
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+        {{{{raw}}}}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        {{{{/raw}}}}
+          publish_dir: {{folder}}/{{target_dir}}

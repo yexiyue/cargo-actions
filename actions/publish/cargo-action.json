@@ -1,13 +1,12 @@
 {
-  "name": "publish",
-  "description": "Automated Crate Publishing",
+  "name": "publish crate",
+  "description": "发布Rust Crate",
   "path": "./publish-crate.yaml.hbs",
-  "author": "yexiyue <yexiyue666@qq.com>",
   "prompts": [
     {
       "type": "select",
       "field": "toolchain",
-      "prompt": "Select your Rust toolchain",
+      "prompt": "请选择Rust toolchain",
       "default": 0,
       "options": [
         {
@@ -25,5 +24,5 @@
       ]
     }
   ],
-  "success_message": "Please ensure that you have set the crates.io token \n in your GitHub secrets with the key 'CRATE_TOKEN'."
+  "success_message": "请确保已在GitHub的秘密中设置了crates.io的令牌，其密钥名为'CRATE_TOKEN'。"
 }

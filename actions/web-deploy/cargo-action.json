@@ -1,0 +1,56 @@
+{
+  "name": "web-deploy",
+  "description": "构建web 应用到Github Pages",
+  "prompts": [
+    {
+      "type": "select",
+      "field": "toolchain",
+      "prompt": "请选择包管理工具",
+      "default": 0,
+      "options": [
+        {
+          "label": "npm",
+          "value": "npm"
+        },
+        {
+          "label": "yarn",
+          "value": "yarn"
+        },
+        {
+          "label": "pnpm",
+          "value": "pnpm"
+        }
+      ]
+    },
+    {
+      "type": "confirm",
+      "field": "enable_catch",
+      "prompt": "是否启用缓存",
+      "default": true
+    },
+    {
+      "type": "input",
+      "field": "node_version",
+      "prompt": "请输入node版本号",
+      "default": "node"
+    },
+    {
+      "type": "input",
+      "field": "folder",
+      "prompt": "web 项目路径",
+      "default": "."
+    },
+    {
+      "type": "input",
+      "prompt": "构建产物目录(相对于web 项目路径)",
+      "field": "target_dir",
+      "default": "dist"
+    },
+    {
+      "type": "confirm",
+      "prompt": "是否需要复制index.html 为404.html 以支持spa",
+      "field": "copy_index",
+      "default": false
+    }
+  ]
+}
