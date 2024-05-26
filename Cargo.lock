@@ -231,7 +231,7 @@ checksum = "514de17de45fdb8dc022b1a7975556c53c86f9f0aa5f534b98977b171857c2c9"
 
 [[package]]
 name = "cargo-actions"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "actions-templates",
  "anyhow",
@@ -469,9 +469,9 @@ dependencies = [
 
 [[package]]
 name = "dialogue-core"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b684b772ad40c2328f9365799c8b87a23d534122a9b005665a2a85b32dc93c1"
+checksum = "9ef14c077a4754df186b11d876ffebb00f6c41400e79d373a5807de80aaf8b9b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -480,9 +480,9 @@ dependencies = [
 
 [[package]]
 name = "dialogue-macro"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c632e65012a1886a6fa93ccf0a83992dbb57a8b250048df35c6c55b7dd4e9f83"
+checksum = "b03fa6d4eaf0e14e41732875808f67e4ff6afa7a0510ac96241e7c13f38d5956"
 dependencies = [
  "dialogue-core",
  "dialoguer 0.11.0",

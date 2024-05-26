@@ -1,8 +1,10 @@
 mod init;
+use check::CheckArgs;
 use clap::Parser;
 use init::InitArgs;
 use login::login;
 use upload::UploadArgs;
+mod check;
 mod client;
 mod favorite;
 pub mod git;
@@ -13,9 +15,8 @@ mod mine;
 mod path_configs;
 mod token;
 mod upload;
-
-static CARGO_ACTIONS_URL: &str = "https://actions-workflow.shuttleapp.rs";
-static CARGO_ACTIONS_FRONT_URL: &str = "https://yexiyue.github.io/actions-workflow";
+const CARGO_ACTIONS_URL: &str = "https://actions-workflow.shuttleapp.rs";
+const CARGO_ACTIONS_FRONT_URL: &str = "https://yexiyue.github.io/actions-workflow";
 
 pub trait Run {
     fn run(&mut self) -> anyhow::Result<()>;
@@ -45,6 +46,9 @@ pub enum ActionsArgs {
 
     /// Initializes a GitHub Actions workflow using a template from the user's favorites.
     Favorite,
+
+    /// Use local templates for initialization to check the templates
+    Check(CheckArgs),
 }
 
 impl Run for CargoAction {
@@ -63,6 +67,7 @@ impl Run for ActionsArgs {
             Self::Upload(upload) => upload.run(),
             Self::Mine => mine::run(),
             Self::Favorite => favorite::run(),
+            Self::Check(check) => check.run(),
         }
     }
 }

@@ -29,18 +29,18 @@ pub struct Inputs {
 #[derive(Debug, Args, Asker)]
 pub struct UploadArgs {
     /// Specifies the local path to the actions template folder to be uploaded.
-    #[input(prompt = "请输入actions template文件夹路径：")]
-    path: Option<String>,
+    #[input(prompt = "请输入actions template文件夹路径：", with_default = true)]
+    pub path: Option<String>,
 
     /// Specifies whether to update the existing template.
     #[confirm(prompt = "您想要更新您的模版吗？", default = false)]
     #[arg(short, long, action=clap::ArgAction::SetTrue)]
-    update: Option<bool>,
+    pub update: Option<bool>,
 
     /// Specifies the ID of the template to be updated.
     #[input(prompt = "请输入actions template模版ID：")]
     #[arg(short, long)]
-    id: Option<i32>,
+    pub id: Option<i32>,
 }
 
 impl Run for UploadArgs {
@@ -56,7 +56,8 @@ impl Run for UploadArgs {
         }
 
         if self.path.is_none() {
-            let args = UploadArgs::asker().path().finish();
+            let cur_dir = env::current_dir()?;
+            let args = UploadArgs::asker().path(cur_dir.to_string_lossy()).finish();
             self.path = args.path;
         }
 

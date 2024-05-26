@@ -82,6 +82,7 @@ impl WritePath {
                 Err(anyhow!("您已经取消写入"))
             }
         } else {
+            std::fs::create_dir_all(path.parent().unwrap())?;
             Ok(path.to_path_buf())
         }
     }
