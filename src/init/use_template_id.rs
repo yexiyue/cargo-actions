@@ -28,7 +28,7 @@ pub fn use_template_id(id: &str) -> anyhow::Result<()> {
                 .await?;
 
             if let Some(QueryTemplate { template_by_id }) = res.data {
-                info!("upload template success");
+                success!("download template success");
 
                 if let Some(data) = template_by_id {
                     let config_string = &data.config;
