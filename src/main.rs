@@ -1,4 +1,4 @@
 
 fn main() {
-    cargo_actions::run();
+    cargo_actions::cargo_run();
 }

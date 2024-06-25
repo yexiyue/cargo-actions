@@ -72,11 +72,22 @@ impl Run for ActionsArgs {
     }
 }
 
-/// Run the cargo actions command
-pub fn run(){
+
+pub fn cargo_run(){
     let mut cargo_action = CargoAction::parse();
 
     match cargo_action.run() {
+        Ok(_) => {}
+        Err(e) => {
+            error!("{e}");
+            std::process::exit(1);
+        }
+    }
+}
+
+pub fn run(){
+    let mut actions=ActionsArgs::parse();
+    match actions.run() {
         Ok(_) => {}
         Err(e) => {
             error!("{e}");
