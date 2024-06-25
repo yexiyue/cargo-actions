@@ -29,7 +29,7 @@ pub enum CargoAction {
     Actions(ActionsArgs),
 }
 
-/// Represents different actions that can be performed by the application.
+
 #[derive(Debug, Parser)]
 pub enum ActionsArgs {
     /// Initializes a new GitHub Actions workflow in your project.
