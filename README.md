@@ -23,7 +23,7 @@ cargo install cargo-actions
 
 ### 初始化
 
-使用 github 仓库 url 创建项目，可以省略https://github.com/前缀。默认会使用https://github.com/yexiyue/cargo-actions里的工作流模版。
+使用 github 仓库 url 创建项目，可以省略<https://github.com/前缀。默认会使用https://github.com/yexiyue/cargo-actions里的工作流模版。>
 
 使用省略形式，规则（User/Repo）
 
