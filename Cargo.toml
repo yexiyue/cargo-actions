@@ -6,7 +6,7 @@ edition = "2021"
 license = "MIT"
 keywords = ["CLI"]
 description = "cargo, create a CI github action"
-repository = "https://github.com/yexiyue/yexiyue/cargo-actions"
+repository = "https://github.com/yexiyue/cargo-actions"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
